@@ -112,7 +112,7 @@ d3.csv("data/cd_demo.csv", function (data) {
 
     // 06 Set format. These don't return the chart, so can't chain them 
     demoDateBarChart.xAxis().tickFormat(d3.format("d")); // need "2005" not "2,005" 
-    demoDateBarChart.yAxis().tickFormat(function (v) { return v / billion + " B"; });
+    demoDateBarChart.yAxis().tickFormat(function (v) { return v + " ppl"; });
        
     
     // 04 dimension, rowchart, department_TYPE  
