@@ -22,7 +22,7 @@ d3.csv("data/cd_demo.csv", function (data) {
 	divisionPieChart = dc.pieChart("#dc-chart-division");
 	departmentRowChart = dc.rowChart("#dc-chart-department");
 	planningunitRowChart = dc.rowChart("#dc-chart-planningunit");
-	roleRowChart = dc.rowChart("#dc-chart-role");
+	rolePieChart = dc.pieChart("#dc-chart-role");
 	nameRowChart = dc.rowChart("#dc-chart-name");
     demoDateBarChart = dc.barChart("#dc-chart-demoDate");
     
@@ -33,15 +33,7 @@ d3.csv("data/cd_demo.csv", function (data) {
     var facts = crossfilter(data);
 
      // 01 group for grand total 
-    var totalGroup = facts.groupAll().reduce(
-        function (p, v) { // add finction
-            return p += v.count;
-        },
-        function (p, v) { // subtract function
-            return p -= v.count;
-        },
-        function () { return 0 } // initial function
-    );
+    var totalGroup = facts.groupAll().reduceSum(dc.pluck("count"));
 
     // 01 display grand total
     totalNumber
@@ -57,27 +49,13 @@ d3.csv("data/cd_demo.csv", function (data) {
     var divisionDim = facts.dimension(dc.pluck('Division'));
     var divisionGroupSum = divisionDim.group().reduceSum(dc.pluck("count"));
     
-   /* divisionRowChart
-        .dimension(divisionDim)
-        .group(divisionGroupSum)
-        .data(function (d) { return d.top(15); })
-        .width(300)
-        .height(220)
-        //.height(15 * 22)
-        .margins({ top: 0, right: 10, bottom: 20, left: 20 })
-        .elasticX(true)
-        .ordinalColors(['#9ecae1']) // light blue
-        .labelOffsetX(0)
-        .xAxis().ticks(4).tickFormat(d3.format(".2s"));  */
-    
     divisionPieChart
         .dimension(divisionDim)
         .group(divisionGroupSum)
         .width(200)
         .height(200)
         .radius(80)
-        .ordinalColors(appropriationTypeColors)
-
+        .ordinalColors(appropriationTypeColors);
 
     // 04 dimension and group for demo date
     var demoDateDim = facts.dimension(dc.pluck('Date'));
@@ -129,15 +107,9 @@ d3.csv("data/cd_demo.csv", function (data) {
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
         //.ordinalColors(['#9ecae1']) // light blue
-        .colors(d3.scale.category10())
-        .label(function(d) {
-			return d.key;
-		})
-		.title(function(d) {
-			return d.key + ' / ' + d.value;
-		})
-        //.labelOffsetX(0)
-        .xAxis().ticks(5).tickFormat(d3.format(".2s"));
+        .colors(d3.scale.category20())
+        .labelOffsetX(0)
+        .xAxis().ticks(5).tickFormat(d3.format("d"));
     
     // 05 dimension, rowchart, BUSINESS_FOCUS  
     var planningunitDim = facts.dimension(dc.pluck('Planning Unit'));
@@ -152,26 +124,24 @@ d3.csv("data/cd_demo.csv", function (data) {
         //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        .ordinalColors(['#9ecae1']) // light blue
+        //.ordinalColors(['#9ecae1']) // light blue
+        .colors(d3.scale.category10())
         .labelOffsetX(0)
-        .xAxis().ticks(4).tickFormat(d3.format(".2s"));
+        .xAxis().ticks(4).tickFormat(d3.format("d"));
     
     // 06 dimension, rowchart, role  
     var roleDim = facts.dimension(dc.pluck('Role'));
     var roleGroupSum = roleDim.group().reduceSum(dc.pluck("count"));
     
-    roleRowChart
+    rolePieChart
         .dimension(roleDim)
         .group(roleGroupSum)
-        .data(function (d) { return d.top(15); })
-        .width(300)
-        .height(220)
-        //.height(15 * 22)
-        .margins({ top: 0, right: 10, bottom: 20, left: 20 })
-        .elasticX(true)
-        .ordinalColors(['#9ecae1']) // light blue
-        .labelOffsetX(0)
-        .xAxis().ticks(5).tickFormat(d3.format(".2s"));
+        .width(200)
+        .height(200)
+        .radius(80)
+        .ordinalColors(appropriationTypeColors)
+        //.colors(appropriationTypeColors)
+        .innerRadius(50);
     
     // 07 dimension, rowchart, participants  
     var nameDim = facts.dimension(dc.pluck('Participants'));
@@ -181,41 +151,20 @@ d3.csv("data/cd_demo.csv", function (data) {
         .dimension(nameDim)
         .group(nameGroupSum)
         .data(function (d) { return d.top(80); })
-        .width(600)
-        .height(600)
-        //.height(15 * 22)
-        .margins({ top: 0, right: 10, bottom: 20, left: 20 })
+        .width(250)
+        .height(700)
+        .margins({ top: 0, right: 5, bottom: 20, left: 20 })
         .elasticX(true)
-        .ordinalColors(['#9ecae1']) // light blue
+        //.ordinalColors(appropriationTypeColors) // light blue
+        .colors(function (d) {
+            if (d["Role"] == "Employee")
+                return "#74C365";
+            else if (d["Role"] == "Manager")
+                return "#006600";
+            else if (d["Role"] == "Contractor")
+                return "#007BA7";})
         .labelOffsetX(0)
-        .xAxis().ticks(6).tickFormat(d3.format(".2s"));
-
-    
-    // TODO: add fiscalYear
-    /*
-    var fiscalYearDim = facts.dimension(dc.pluck('nameDATE'));
-    var fiscalYearGroupSum = fiscalYearDim.group().reduceSum(dc.pluck("count"));
-
-    // 05 stacked bar chart for fiscal year w/appropriation types  
-    var bar = dc.barChart("#dc-chart-fiscalYear")
-        .dimension(fiscalYearDim)
-        .group(fiscalYearGroupSum, "Base").valueAccessor(function (d) { return d.value.Base; })
-        .stack(fiscalYearGroupSum, "Supplemental", function (d) { return d.value.Supplemental; })
-        .stack(fiscalYearGroupSum, "Request", function (d) { return d.value.Request; })
-        .width(650)
-        .height(200).margins({ top: 10, right: 30, bottom: 20, left: 50 })
-        .legend(dc.legend().x(60).y(20))
-        .gap(10)  // space between bars
-        .centerBar(true)
-        .filter([2005.5, 2015.5])
-        .x(d3.scale.linear().domain([2005.5, 2015.5]))
-        .elasticY(true)
-        .ordinalColors(appropriationTypeColors);
-
-    // 06 Set format. These don't return the chart, so can't chain them 
-    bar.xAxis().tickFormat(d3.format("d")); // need "2005" not "2,005" 
-    bar.yAxis().tickFormat(function (v) { return v / billion + " B"; });
-    */
+        .xAxis().ticks(1).tickFormat(d3.format("d"));
 
     dc.renderAll();
 });
