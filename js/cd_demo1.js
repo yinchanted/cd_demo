@@ -18,7 +18,7 @@ d3.csv("data/cd_demo.csv", function (data) {
     
     // associate the charts with their html elements
     totalNumber = dc.numberDisplay("#dc-chart-total");
-    //uniqueNumber = dc.numberDisplay("#dc-chart-unique");
+    uniqueNumber = dc.numberDisplay("#dc-chart-unique");
 	divisionPieChart = dc.pieChart("#dc-chart-division");
 	departmentRowChart = dc.rowChart("#dc-chart-department");
 	planningunitRowChart = dc.rowChart("#dc-chart-planningunit");
@@ -26,7 +26,7 @@ d3.csv("data/cd_demo.csv", function (data) {
 	nameRowChart = dc.rowChart("#dc-chart-name");
     demoDateBarChart = dc.barChart("#dc-chart-demoDate");
     
-    data.forEach(function (d) {
+    /*data.forEach(function (d) {
         d.count = 1; // add column "count", set value to "1"
     });
     // put data in crossfilter
@@ -42,7 +42,69 @@ d3.csv("data/cd_demo.csv", function (data) {
             //console.log(d.Participants);
             return d.count;
         })
-        .formatNumber(function (d) { return d + " scans"; });
+        .formatNumber(function (d) { return d + " scans"; });  */
+    
+    data.forEach(function (d) {
+        d.count = 1; // add column "count", set value to "1"
+    });
+    // put data in crossfilter
+    var facts = crossfilter(data);
+
+    var updateUnique = function (unique, key, increment) {
+	    var value = unique["" + key];
+
+	    // not initialized
+	    if (typeof value === 'undefined')
+		value = 0;
+
+	    // update with increment
+	    if (value + increment > 0) {
+		unique["" + key] = value + increment;
+	    } else {
+		delete unique["" + key];
+	    }
+	}
+
+    // group for grand total number of attendees
+    var totalGroup = facts.groupAll().reduce(
+        function (p, v) { // add finction
+            ++p.count;
+            console.log(v["Participants"]);
+            updateUnique(p.uAttendees, v["Participants"], 1);
+	    return p;
+        },
+        function (p, v) { // subtract function
+            --p.count;
+            updateUnique(p.uAttendees, v["Participants"], -1);
+            return p;
+        },
+        function () {
+            return {
+                count: 0,
+                uAttendees: {} // unique Attendees
+            }
+        } // initial function
+    );
+
+    // 01 display grand total
+    totalNumber
+        .group(totalGroup)
+        .valueAccessor(function (d) {
+            console.log(d.uAttendees);
+            return d.count;
+        })
+        .formatNumber(function (d) { return d + " attendees"; });
+
+    // 02 display grand total
+    uniqueNumber
+        .group(totalGroup)
+        .valueAccessor(function (d) {
+            var keys = 0;
+            for (k in d.uAttendees) ++keys;
+	    return keys;
+        })
+        //.formatNumber(function (d) { return Math.round(d) + " attendees"; });
+        .formatNumber(function (d) { return d + " unique person"; });
 
     
     // 03 dimension, rowchart, division
