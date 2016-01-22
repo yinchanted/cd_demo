@@ -44,8 +44,16 @@ d3.csv("data/cd_demo.csv", function (data) {
         })
         .formatNumber(function (d) { return d + " scans"; });  */
     
+    var dateFormat = d3.time.format("%Y-%m-%dT%H:%MZ");
+    
     data.forEach(function (d) {
         d.count = 1; // add column "count", set value to "1"
+        
+        // rewrite time with the javascript Time object
+        d.Time = dateFormat.parse(d.Time);
+        
+        // set date as a the initial index (2016.1). TODO: remove the need of this field
+        d.Date = "" + d.Time.getFullYear() + "." + d.Time.getMonth();
     });
     // put data in crossfilter
     var facts = crossfilter(data);
@@ -69,7 +77,6 @@ d3.csv("data/cd_demo.csv", function (data) {
     var totalGroup = facts.groupAll().reduce(
         function (p, v) { // add finction
             ++p.count;
-            console.log(v["Participants"]);
             updateUnique(p.uAttendees, v["Participants"], 1);
 	    return p;
         },
@@ -90,7 +97,6 @@ d3.csv("data/cd_demo.csv", function (data) {
     totalNumber
         .group(totalGroup)
         .valueAccessor(function (d) {
-            console.log(d.uAttendees);
             return d.count;
         })
         .formatNumber(function (d) { return d + " attendees"; });
@@ -193,7 +199,19 @@ d3.csv("data/cd_demo.csv", function (data) {
     
     // 06 dimension, rowchart, role  
     var roleDim = facts.dimension(dc.pluck('Role'));
+    var nameRoles = d3.map(data.reduce(function(o, v, i) {
+        o[v.Participants] = v.Role;
+        return o;
+    }, {}));
+
     var roleGroupSum = roleDim.group().reduceSum(dc.pluck("count"));
+
+    var roles = roleGroupSum.top(Infinity).map(function(d) {return d.key; });
+    var rolesNumber = d3.map(roles.reduce(function(old, value, index) {
+        old[value] = index;
+        return old;
+    }, {}));
+    var rolesColors = d3.scale.category20();
     
     rolePieChart
         .dimension(roleDim)
@@ -201,30 +219,26 @@ d3.csv("data/cd_demo.csv", function (data) {
         .width(200)
         .height(200)
         .radius(80)
-        .ordinalColors(appropriationTypeColors)
-        //.colors(appropriationTypeColors)
+        .colors(rolesColors)
+        .colorAccessor(function(d){
+            return rolesNumber.get(d.key);
+        })
         .innerRadius(50);
     
     // 07 dimension, rowchart, participants  
     var nameDim = facts.dimension(dc.pluck('Participants'));
     var nameGroupSum = nameDim.group().reduceSum(dc.pluck("count"));
-    
     nameRowChart
         .dimension(nameDim)
         .group(nameGroupSum)
-        .data(function (d) { return d.top(80); })
         .width(250)
         .height(700)
         .margins({ top: 0, right: 5, bottom: 20, left: 20 })
         .elasticX(true)
-        //.ordinalColors(appropriationTypeColors) // light blue
-        .colors(function (d) {
-            if (d["Role"] == "Employee")
-                return "#74C365";
-            else if (d["Role"] == "Manager")
-                return "#006600";
-            else if (d["Role"] == "Contractor")
-                return "#007BA7";})
+        .colors(rolesColors)
+        .colorAccessor(function(d){
+            return rolesNumber.get( nameRoles.get(d.key) );
+        })
         .labelOffsetX(0)
         .xAxis().ticks(1).tickFormat(d3.format("d"));
 
