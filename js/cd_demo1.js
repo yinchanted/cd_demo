@@ -198,12 +198,6 @@ d3.csv("data/cd_demo.csv", function (data) {
         .xAxis().ticks(4).tickFormat(d3.format("d"));
     
     // 06 dimension, rowchart, role  
-    var roles = roleGroupSum.top(Infinity).map(function(d) {return d.key; });
-    var rolesNumber = d3.map(roles.reduce(function(old, value, index) {
-        old[value] = index;
-        return old;
-    }, {}));
-    
     var roleDim = facts.dimension(dc.pluck('Role'));
     var nameRoles = d3.map(data.reduce(function(o, v, i) {
         o[v.Participants] = v.Role;
@@ -211,11 +205,17 @@ d3.csv("data/cd_demo.csv", function (data) {
     }, {}));
 
     var roleGroupSum = roleDim.group().reduceSum(dc.pluck("count"));
+
+    var roles = roleGroupSum.top(Infinity).map(function(d) {return d.key; });
+    var rolesNumber = d3.map(roles.reduce(function(old, value, index) {
+        old[value] = index;
+        return old;
+    }, {}));
     var rolesColors = d3.scale.category20();
     
     rolePieChart
         .dimension(roleDim)
-        .group(roleDim.group())
+        .group(roleGroupSum)
         .width(200)
         .height(200)
         .radius(80)
