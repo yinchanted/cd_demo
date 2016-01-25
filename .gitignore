@@ -1,0 +1,9 @@
+# node development
+bower_components
+node_modules
+
+# build target directories
+dist
+
+# jshint reporter output
+jshint.txt
