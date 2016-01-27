@@ -55,6 +55,7 @@ d3.csv("data/cd_demo.csv", function (data) {
         // set date as a the initial index (2016.1). TODO: remove the need of this field
         d.Date = "" + d.Time.getFullYear() + "." + d.Time.getMonth();
     });
+    
     // put data in crossfilter
     var facts = crossfilter(data);
 
@@ -62,34 +63,36 @@ d3.csv("data/cd_demo.csv", function (data) {
 	    var value = unique["" + key];
 
 	    // not initialized
-	    if (typeof value === 'undefined')
-		value = 0;
+	    if (typeof value === 'undefined') {
+		  value = 0;
+        }
 
 	    // update with increment
 	    if (value + increment > 0) {
-		unique["" + key] = value + increment;
+		  unique["" + key] = value + increment;
 	    } else {
-		delete unique["" + key];
+		  delete unique["" + key];
 	    }
-	}
+	};
 
     // group for grand total number of attendees
     var totalGroup = facts.groupAll().reduce(
         function (p, v) { // add finction
             ++p.count;
-            updateUnique(p.uAttendees, v["Participants"], 1);
+            updateUnique(p.uAttendees, v.Participants, 1);
 	    return p;
         },
         function (p, v) { // subtract function
             --p.count;
-            updateUnique(p.uAttendees, v["Participants"], -1);
+            updateUnique(p.uAttendees, v.Participants, -1);
             return p;
         },
         function () {
             return {
                 count: 0,
-                uAttendees: {} // unique Attendees
-            }
+                uAttendees: { // unique Attendees
+                }
+            };
         } // initial function
     );
 
@@ -106,8 +109,8 @@ d3.csv("data/cd_demo.csv", function (data) {
         .group(totalGroup)
         .valueAccessor(function (d) {
             var keys = 0;
-            for (k in d.uAttendees) ++keys;
-	    return keys;
+            for (var k in d.uAttendees) ++keys;
+	           return keys;
         })
         //.formatNumber(function (d) { return Math.round(d) + " attendees"; });
         .formatNumber(function (d) { return d + " unique person"; });
@@ -176,7 +179,7 @@ d3.csv("data/cd_demo.csv", function (data) {
         .elasticX(true)
         //.ordinalColors(['#9ecae1']) // light blue
         .colors(d3.scale.category20())
-        .labelOffsetX(0)
+        .labelOffsetX(5)
         .xAxis().ticks(5).tickFormat(d3.format("d"));
     
     // 05 dimension, rowchart, BUSINESS_FOCUS  
@@ -194,7 +197,7 @@ d3.csv("data/cd_demo.csv", function (data) {
         .elasticX(true)
         //.ordinalColors(['#9ecae1']) // light blue
         .colors(d3.scale.category10())
-        .labelOffsetX(0)
+        .labelOffsetX(5)
         .xAxis().ticks(4).tickFormat(d3.format("d"));
     
     // 06 dimension, rowchart, role  
@@ -239,9 +242,10 @@ d3.csv("data/cd_demo.csv", function (data) {
         .colorAccessor(function(d){
             return rolesNumber.get( nameRoles.get(d.key) );
         })
-        .labelOffsetX(0)
+        .labelOffsetX(5)
         .xAxis().ticks(1).tickFormat(d3.format("d"));
 
+    dc.filterAll();
     dc.renderAll();
 });
 

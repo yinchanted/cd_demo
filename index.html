@@ -4,46 +4,55 @@
 <head>
     <title>CD Demo</title>
 
-    <script src='lib/d3.js' type='text/javascript'></script>
-    <script src='lib/crossfilter.js' type='text/javascript'></script>
-    <script src='lib/dc.js' type='text/javascript'></script>
-    <script src='lib/bootstrap.min.js' type='text/javascript'></script>
-    <script src='js/cd_demo1.js' type='text/javascript'></script>
+    <!-- bootstrap -->
+    <script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <!-- d3.js -->
+    <script src="bower_components/d3/d3.min.js" type="text/javascript"></script>
+    <!-- crossfilter -->
+    <script src="bower_components/crossfilter/crossfilter.min.js" type="text/javascript"></script>
+    <!-- dcjs -->
+    <script src="bower_components/dcjs/dc.min.js" type="text/javascript"></script>
+    <link href="bower_components/dcjs/dc.min.css" rel="stylesheet" type="text/css" />
 
-    <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-    <link href='css/dc.css' rel='stylesheet' type='text/css'>
+    <!-- cd_demo -->
+    <script src="js/cd_demo1.js" type="text/javascript"></script>
+    <link href="css/cd_demo.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
-    <div class='container' style='font: 10px sans-serif;'>
+    <div class="container" style="font: 10px sans-serif;">
         
-        <div class='row'>
-            <div class='span12'>
+        <div class="row">
+            <div class="span12">
                 <div class="dc-data-count" style="float: left;"> 
-                    <h3>CD demo | <span> <a href="javascript:dc.filterAll(); dc.renderAll();">Reset</a></span> </h3> 
+                    <h3>CD demo | <span>
+                        <a href="javascript:dc.filterAll(); dc.renderAll();">Reset</a>
+                        </span>
+                    </h3> 
                     <h4><span id="dc-chart-total"></span> : <span id="dc-chart-unique"></span></h4>   
                 </div>
             </div>
         </div>
     </div>
-    <div class='container' id='main-container'>
-        <div class='row-fluid'> 
-            <div class='remaining-graphs span8'>
-                <div class='row-fluid'>
-                    <div class='span8' id='dc-chart-demoDate'><h4>Demo Date</h4></div>
+    <div class="container col-md-12" id="main-container">
+        <div class="row-fluid"> 
+            <div class="remaining-graphs span8">
+                <div class="row-fluid">
+                    <div class="span4" id="dc-chart-name"><h4>Participants</h4></div>   
                 </div>
-                <div class='row-fluid'>
-                    <div class='span6' id='dc-chart-division'><h4>Division</h4></div>
-                    <div class='span6' id='dc-chart-role'><h4>Role</h4></div>
+                <div class="row-fluid">
+                    <div class="span8" id="dc-chart-demoDate"><h4>Demo Date</h4></div>
                 </div>
-                <div class='row-fluid'>
-                    <div class='span6' id='dc-chart-department'><h4>Department</h4></div>
-                    <div class='span6' id='dc-chart-planningunit'><h4>Planning Unit</h4></div>
+                <div class="row-fluid">
+                    <div class="span6" id="dc-chart-department"><h4>Department</h4></div>
+                    <div class="span6" id="dc-chart-planningunit"><h4>Planning Unit</h4></div>
                 </div>
-            </div>
-            <div class='remaining-graphs span4'>
-                <div class='row-fluid'>
-                    <div class='span4' id='dc-chart-name'><h4>Participants</h4></div>   
+                <div class="row-fluid">
+                    <div class="span6" id="dc-chart-division"><h4>Division</h4></div>
+                    <div class="span6" id="dc-chart-role"><h4>Role</h4></div>
                 </div>
             </div>
         </div>
