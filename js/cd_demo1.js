@@ -159,7 +159,11 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .gap(10)  // space between bars
         .centerBar(true)
         .filter([2015.5, 2017.5])
-        .x(d3.scale.linear().domain([2010.5, 2020.5]))
+        //.x(d3.scale.linear().domain([2010.5, 2020.5]))
+        .x(d3.time.scale().domain([(new Date(2015,11,12)), (new Date(2016,01,20))]).nice(d3.time.day))
+        .xAxis().tickFormat(function (x) {
+        return x.getDate() + "/" + (x.getMonth()+1);
+        }
         .elasticY(true)
         .ordinalColors(appropriationTypeColors);
 
