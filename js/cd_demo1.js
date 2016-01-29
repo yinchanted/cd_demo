@@ -13,6 +13,13 @@ var appropriationTypeColors =
     "#006600",  // dark green 
     "#007BA7"]; // blue
 
+var rolesColors =
+    [
+     "#aec7e8", // light blue 
+    "#1f77b4", // dark blue
+    "#ffbb78", //  orange 
+    ]; 
+
 // load the data file
 d3.csv("data/cd_demo.csv", function (data) {
     
@@ -212,6 +219,7 @@ d3.csv("data/cd_demo.csv", function (data) {
         return old;
     }, {}));
     var rolesColors = d3.scale.category20();
+    //var rolesColors = roleTypeColors;
     
     rolePieChart
         .dimension(roleDim)
