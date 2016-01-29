@@ -9,19 +9,19 @@ var nameRowChart;
 var demoDateBarChart;
 
 var appropriationTypeColors =
-    ["#74C365", // light green 
-    "#006600",  // dark green 
+    ["#17becf", // light green 
+    "#bcbd22",  // dark green 
     "#007BA7"]; // blue
 
 var rolesColors =
     [
      "#aec7e8", // light blue 
     "#1f77b4", // dark blue
-    "#ffbb78", //  orange 
+    "#ffbb78" //  orange 
     ]; 
 
 // load the data file
-d3.csv("data/cd_demo.csv", function (data) {
+d3.csv("data/cd_demo_all.csv", function (data) {
     
     // associate the charts with their html elements
     totalNumber = dc.numberDisplay("#dc-chart-total");
@@ -177,12 +177,12 @@ d3.csv("data/cd_demo.csv", function (data) {
         .group(departmentTypeGroupSum)
         .data(function (d) { return d.top(15); })
         .width(300)
-        .height(220)
+        .height(330)
         //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        //.ordinalColors(['#9ecae1']) // light blue
-        .colors(d3.scale.category20())
+        .ordinalColors(['#c5b0d5']) // light blue
+        //.colors(d3.scale.category20())
         .labelOffsetX(0)
         .xAxis().ticks(5).tickFormat(d3.format("d"));
     
@@ -195,11 +195,11 @@ d3.csv("data/cd_demo.csv", function (data) {
         .group(planningunitGroupSum)
         .data(function (d) { return d.top(15); })
         .width(300)
-        .height(220)
+        .height(330)
         //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        //.ordinalColors(['#9ecae1']) // light blue
+        //.ordinalColors(['#c5b0d5']) // light purple
         .colors(d3.scale.category10())
         .labelOffsetX(0)
         .xAxis().ticks(4).tickFormat(d3.format("d"));
@@ -216,6 +216,7 @@ d3.csv("data/cd_demo.csv", function (data) {
     var roles = roleGroupSum.top(Infinity).map(function(d) {return d.key; });
     var rolesNumber = d3.map(roles.reduce(function(old, value, index) {
         old[value] = index;
+        console.log("what's the index value:", old)
         return old;
     }, {}));
     var rolesColors = d3.scale.category20();
@@ -229,6 +230,7 @@ d3.csv("data/cd_demo.csv", function (data) {
         .radius(80)
         .colors(rolesColors)
         .colorAccessor(function(d){
+            console.log("what's the returned index value:", rolesNumber.get(d.key));
             return rolesNumber.get(d.key);
         })
         .innerRadius(50);
@@ -240,11 +242,12 @@ d3.csv("data/cd_demo.csv", function (data) {
         .dimension(nameDim)
         .group(nameGroupSum)
         .width(250)
-        .height(700)
+        .height(830)
         .margins({ top: 0, right: 5, bottom: 20, left: 20 })
         .elasticX(true)
         .colors(rolesColors)
         .colorAccessor(function(d){
+            console.log("what's the returned name value:", rolesNumber.get( nameRoles.get(d.key)));
             return rolesNumber.get( nameRoles.get(d.key) );
         })
         .labelOffsetX(0)
