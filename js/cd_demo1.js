@@ -9,8 +9,8 @@ var nameRowChart;
 var demoDateBarChart;
 
 var appropriationTypeColors =
-    ["#17becf", // light green 
-    "#bcbd22",  // dark green 
+    ["#9e9ac8",
+     "#bcbddc", // light green 
     "#007BA7"]; // blue
 
 var rolesColors =
@@ -154,18 +154,19 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .group(demoDateGroupSum, "IT").valueAccessor(function (d) { return d.value.IT; })
         .stack(demoDateGroupSum, "OPS", function (d) { return d.value.OPS; })
         .width(650)
+        .centerBar(true)
         .height(200).margins({ top: 10, right: 30, bottom: 20, left: 50 })
         .legend(dc.legend().x(60).y(20))
-        .gap(10)  // space between bars
+        .gap(200)  // space between bars
         .centerBar(true)
-        .filter([2015.5, 2017.5])
-        //.x(d3.scale.linear().domain([2010.5, 2020.5]))
-        .x(d3.time.scale().domain([(new Date(2015,11,12)), (new Date(2016,01,20))]).nice(d3.time.day))
-        .xAxis().tickFormat(function (x) {
-        return x.getDate() + "/" + (x.getMonth()+1);
-        }
+        .x(d3.scale.linear().domain([2014.2, 2017], .1))
+        //.x(d3.time.scale().domain([(new Date(2015,11,12)), (new Date(2016,01,20))]).nice(d3.time.day))
+         //function (x) {
+         // return x.getDate() + "/" + (x.getMonth()+1);
+        // }
         .elasticY(true)
-        .ordinalColors(appropriationTypeColors);
+        .ordinalColors(appropriationTypeColors)
+        .xAxis().tickFormat(d3.time.format("%Y-%m-%dT%H:%M"));
 
     // 06 Set format. These don't return the chart, so can't chain them 
     demoDateBarChart.xAxis().tickFormat(d3.format("d")); // need "2005" not "2,005" 
@@ -204,7 +205,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
         //.ordinalColors(['#c5b0d5']) // light purple
-        .colors(d3.scale.category10())
+        .colors(d3.scale.category20())
         .labelOffsetX(0)
         .xAxis().ticks(4).tickFormat(d3.format("d"));
     
@@ -223,7 +224,8 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         console.log("what's the index value:", old)
         return old;
     }, {}));
-    var rolesColors = d3.scale.category20();
+    //var rolesColors = d3.scale.category20();
+    var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#aec7e8", "#e7cb94"]);
     //var rolesColors = roleTypeColors;
     
     rolePieChart
