@@ -120,7 +120,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .formatNumber(function (d) { return d + " unique person"; });
 
     
-    // 03 dimension, rowchart, division
+  /*  // 03 dimension, rowchart, division
     var divisionDim = facts.dimension(dc.pluck('Division'));
     var divisionGroupSum = divisionDim.group().reduceSum(dc.pluck("count"));
     
@@ -130,7 +130,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .width(200)
         .height(200)
         .radius(80)
-        .ordinalColors(appropriationTypeColors);
+        .ordinalColors(appropriationTypeColors);  */
 
     // 04 dimension and group for demo date
     var demoDateDim = facts.dimension(dc.pluck('Date'));
@@ -191,6 +191,18 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .labelOffsetX(0)
         .xAxis().ticks(5).tickFormat(d3.format("d"));
     
+       // 03 dimension, rowchart, division
+    var divisionDim = facts.dimension(dc.pluck('Division'));
+    var divisionGroupSum = divisionDim.group().reduceSum(dc.pluck("count"));
+    
+    divisionPieChart
+        .dimension(divisionDim)
+        .group(divisionGroupSum)
+        .width(200)
+        .height(200)
+        .radius(80)
+        .ordinalColors(appropriationTypeColors);
+
     // 05 dimension, rowchart, BUSINESS_FOCUS  
     var planningunitDim = facts.dimension(dc.pluck('Planning Unit'));
     var planningunitGroupSum = planningunitDim.group().reduceSum(dc.pluck("count"));
