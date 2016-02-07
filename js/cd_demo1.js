@@ -159,13 +159,14 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .legend(dc.legend().x(60).y(20))
         .gap(200)  // space between bars
         //.centerBar(true)
-        //.x(d3.scale.linear().domain([2014.2, 2017], .1))
-        .x(d3.time.scale().domain(d3.extent(data, function(d) { return d3.time.day.round(d.Time) })))
+        .x(d3.time.scale().domain([dateFormat.parse("2015-11-19T5:00Z"), dateFormat.parse("2016-01-15T5:00Z")]))
+        //.x(d3.time.scale().domain(d3.extent(data, function(d) { return d3.time.day.round(d.Time) })))
         .xUnits(d3.time.days)
         //.xUnits(dc.units.ordinal)
         //.elasticY(true)
         .ordinalColors(appropriationTypeColors)
-        .xAxis().ticks(d3.time.days, 7).tickFormat(d3.time.format("%b%e"));
+        //.xAxis().ticks(d3.time.days, 4).tickFormat(d3.time.format("%b%e"));
+        .xAxis().ticks(15).tickFormat(d3.time.format("%b%e"));
 
     demoDateBarChart.yAxis().tickFormat(function (v) { return v + " ppl"; });
        
