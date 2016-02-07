@@ -9,16 +9,8 @@ var nameRowChart;
 var demoDateBarChart;
 
 var appropriationTypeColors =
-    ["#9e9ac8",
-     "#bcbddc", // light green 
-    "#007BA7"]; // blue
-
-var rolesColors =
-    [
-     "#aec7e8", // light blue 
-    "#1f77b4", // dark blue
-    "#ffbb78" //  orange 
-    ]; 
+    ["#bcbddc",
+     "#c6dbef"];
 
 // load the data file
 d3.csv("data/cd_demo_all.csv", function (data) {
@@ -120,17 +112,32 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .formatNumber(function (d) { return d + " unique person"; });
 
     
-  /*  // 03 dimension, rowchart, division
+      // 03 dimension, rowchart, division
     var divisionDim = facts.dimension(dc.pluck('Division'));
-    var divisionGroupSum = divisionDim.group().reduceSum(dc.pluck("count"));
     
+    var planningDivision = d3.map(data.reduce(function(o, v, i) {
+        o[v.PlanningUnit] = v.Division;
+        return o;
+        }, {}));
+    
+    var divisionGroupSum = divisionDim.group().reduceSum(dc.pluck("count"));
+
+    var division = divisionGroupSum.top(Infinity).map(function(d) {return d.key; });
+    var divisionNumber = d3.map(division.reduce(function(old, value, index) {
+        old[value] = index;
+        console.log("what's the index value:", old)
+        return old;
+    }, {}));
+    var divisionColors = d3.scale.ordinal().range(["#bcbddc", "#c6dbef"]);
+    //var divisionColors = d3.scale.ordinal().range(["#609194", "#92DCE0"]);
+     
     divisionPieChart
         .dimension(divisionDim)
         .group(divisionGroupSum)
         .width(200)
         .height(200)
         .radius(80)
-        .ordinalColors(appropriationTypeColors);  */
+        .ordinalColors(appropriationTypeColors);
 
     // 04 dimension and group for demo date
     var demoDateDim = facts.dimension(dc.pluck('Date'));
@@ -148,7 +155,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         }
     );
 
-    // 05 stacked bar chart for fiscal year w/appropriation types  
+    // stacked bar chart for fiscal year w/appropriation types  
     demoDateBarChart
         .dimension(demoDateDim)
         .group(demoDateGroupSum, "IT").valueAccessor(function (d) { return d.value.IT; })
@@ -166,14 +173,15 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         // }
         .elasticY(true)
         .ordinalColors(appropriationTypeColors)
+        //.colors(divisionColors)
         .xAxis().tickFormat(d3.time.format("%Y-%m-%dT%H:%M"));
 
-    // 06 Set format. These don't return the chart, so can't chain them 
+    // Set format. These don't return the chart, so can't chain them 
     demoDateBarChart.xAxis().tickFormat(d3.format("d")); // need "2005" not "2,005" 
     demoDateBarChart.yAxis().tickFormat(function (v) { return v + " ppl"; });
        
     
-    // 04 dimension, rowchart, department_TYPE  
+    // 05 dimension, rowchart, department 
     var departmentTypeDim = facts.dimension(dc.pluck('Department'));
     var departmentTypeGroupSum = departmentTypeDim.group().reduceSum(dc.pluck("count"));
     
@@ -186,25 +194,13 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        .ordinalColors(['#c5b0d5']) // light blue
-        //.colors(d3.scale.category20())
+        //.ordinalColors(['#c5b0d5']) // light blue
+        .colors(divisionColors)
         .labelOffsetX(0)
         .xAxis().ticks(5).tickFormat(d3.format("d"));
     
-       // 03 dimension, rowchart, division
-    var divisionDim = facts.dimension(dc.pluck('Division'));
-    var divisionGroupSum = divisionDim.group().reduceSum(dc.pluck("count"));
-    
-    divisionPieChart
-        .dimension(divisionDim)
-        .group(divisionGroupSum)
-        .width(200)
-        .height(200)
-        .radius(80)
-        .ordinalColors(appropriationTypeColors);
-
-    // 05 dimension, rowchart, BUSINESS_FOCUS  
-    var planningunitDim = facts.dimension(dc.pluck('Planning Unit'));
+    // 06 dimension, rowchart, planning unit  
+    var planningunitDim = facts.dimension(dc.pluck('PlanningUnit'));
     var planningunitGroupSum = planningunitDim.group().reduceSum(dc.pluck("count"));
     
     planningunitRowChart
@@ -213,15 +209,13 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .data(function (d) { return d.top(15); })
         .width(300)
         .height(330)
-        //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        //.ordinalColors(['#c5b0d5']) // light purple
-        .colors(d3.scale.category20())
+        .colors(divisionColors)
         .labelOffsetX(0)
         .xAxis().ticks(4).tickFormat(d3.format("d"));
     
-    // 06 dimension, rowchart, role  
+    // 07 dimension, rowchart, role  
     var roleDim = facts.dimension(dc.pluck('Role'));
     var nameRoles = d3.map(data.reduce(function(o, v, i) {
         o[v.Participants] = v.Role;
@@ -237,7 +231,8 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         return old;
     }, {}));
     //var rolesColors = d3.scale.category20();
-    var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#aec7e8", "#e7cb94"]);
+    //var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#aec7e8", "#e7cb94"]);
+    var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#A7DBDB", "#E0E4CC"]);
     //var rolesColors = roleTypeColors;
     
     rolePieChart
@@ -253,7 +248,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         })
         .innerRadius(50);
     
-    // 07 dimension, rowchart, participants  
+    // 08 dimension, rowchart, participants  
     var nameDim = facts.dimension(dc.pluck('Participants'));
     var nameGroupSum = nameDim.group().reduceSum(dc.pluck("count"));
     nameRowChart
