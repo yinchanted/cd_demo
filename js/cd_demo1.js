@@ -169,6 +169,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .xAxis().ticks(15).tickFormat(d3.time.format("%b%e"));
 
     demoDateBarChart.yAxis().tickFormat(function (v) { return v + " ppl"; });
+    demoDateBarChart.xUnits(function(){return 100;});
        
     
     // 04 dimension, rowchart, department_TYPE  
