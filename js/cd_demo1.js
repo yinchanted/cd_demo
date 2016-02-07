@@ -60,7 +60,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         d.Time = dateFormat.parse(d.Time);
         
         // set date as a the initial index (2016.1). TODO: remove the need of this field
-        d.Date = "" + d.Time.getFullYear() + "." + d.Time.getMonth();
+        //d.Date = "" + d.Time.getFullYear() + "." + d.Time.getMonth();
     });
     // put data in crossfilter
     var facts = crossfilter(data);
@@ -133,7 +133,8 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .ordinalColors(appropriationTypeColors);
 
     // 04 dimension and group for demo date
-    var demoDateDim = facts.dimension(dc.pluck('Date'));
+//    var demoDateDim = facts.dimension(dc.pluck('Date'));
+    var demoDateDim = facts.dimension(function(d) { return d3.time.day(d.Time);});
     var demoDateGroupSum = demoDateDim.group().reduce(
         function (p, v) { // add function
               p[v.Division] += v.count;
@@ -148,28 +149,24 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         }
     );
 
-    // 05 stacked bar chart for fiscal year w/appropriation types  
+    // 05 stacked bar chart for days w/appropriation types  
     demoDateBarChart
         .dimension(demoDateDim)
         .group(demoDateGroupSum, "IT").valueAccessor(function (d) { return d.value.IT; })
         .stack(demoDateGroupSum, "OPS", function (d) { return d.value.OPS; })
         .width(650)
-        .centerBar(true)
         .height(200).margins({ top: 10, right: 30, bottom: 20, left: 50 })
         .legend(dc.legend().x(60).y(20))
         .gap(200)  // space between bars
-        .centerBar(true)
-        .x(d3.scale.linear().domain([2014.2, 2017], .1))
-        //.x(d3.time.scale().domain([(new Date(2015,11,12)), (new Date(2016,01,20))]).nice(d3.time.day))
-         //function (x) {
-         // return x.getDate() + "/" + (x.getMonth()+1);
-        // }
-        .elasticY(true)
+        //.centerBar(true)
+        //.x(d3.scale.linear().domain([2014.2, 2017], .1))
+        .x(d3.time.scale().domain(d3.extent(data, function(d) { return d3.time.day.round(d.Time) })))
+        .xUnits(d3.time.days)
+        //.xUnits(dc.units.ordinal)
+        //.elasticY(true)
         .ordinalColors(appropriationTypeColors)
-        .xAxis().tickFormat(d3.time.format("%Y-%m-%dT%H:%M"));
+        .xAxis().ticks(d3.time.days, 7).tickFormat(d3.time.format("%b%e"));
 
-    // 06 Set format. These don't return the chart, so can't chain them 
-    demoDateBarChart.xAxis().tickFormat(d3.format("d")); // need "2005" not "2,005" 
     demoDateBarChart.yAxis().tickFormat(function (v) { return v + " ppl"; });
        
     
