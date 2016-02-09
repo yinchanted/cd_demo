@@ -157,16 +157,21 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .width(650)
         .height(200).margins({ top: 10, right: 30, bottom: 20, left: 50 })
         .legend(dc.legend().x(60).y(20))
-        .gap(200)  // space between bars
+        //.gap(1)  // space between bars
         //.centerBar(true)
-        .x(d3.time.scale().domain([dateFormat.parse("2015-11-19T5:00Z"), dateFormat.parse("2016-01-15T5:00Z")]))
+        //.x(d3.time.scale().domain([dateFormat.parse("2015-11-19T5:00Z"), dateFormat.parse("2016-01-15T5:00Z")]))
         //.x(d3.time.scale().domain(d3.extent(data, function(d) { return d3.time.day.round(d.Time) })))
-        .xUnits(d3.time.days)
+        //.x(d3.scale.ordinal().domain([dateFormat.parse("2015-11-20T5:00Z"), dateFormat.parse("2015-12-16T12:00Z"), dateFormat.parse("2016-01-14T14:00Z")]).range([0, 3]))
+        .x(d3.scale.ordinal().domain(d3.time.days(new Date(2015, 10, 20), new Date(2016, 0, 14))).rangeRoundBands([0, 650], .1))
+        //.xUnits(d3.time.days)
         //.xUnits(dc.units.ordinal)
         //.elasticY(true)
+        //.barPadding(2)
         .ordinalColors(appropriationTypeColors)
         //.xAxis().ticks(d3.time.days, 4).tickFormat(d3.time.format("%b%e"));
-        .xAxis().ticks(15).tickFormat(d3.time.format("%b%e"));
+        .xAxis()
+            .ticks(3)
+            .tickFormat(d3.time.format("%b%e"));
 
     demoDateBarChart.yAxis().tickFormat(function (v) { return v + " ppl"; });
     demoDateBarChart.xUnits(function(){return 100;});
