@@ -9,8 +9,8 @@ var nameRowChart;
 var demoDateBarChart;
 
 var appropriationTypeColors =
-    ["#bcbddc",
-     "#c6dbef"];
+    ["#FE5F55",
+     "#D6D1B1"];
 
 // load the data file
 d3.csv("data/cd_demo_all.csv", function (data) {
@@ -231,7 +231,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         return old;
     }, {}));
     //var rolesColors = d3.scale.category20();
-    //var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#aec7e8", "#e7cb94"]);
+    //var rolesColors = d3.scale.ordinal().range(["#F0B67F", "#C7EFCF", "#EEF5DB"]);
     var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#A7DBDB", "#E0E4CC"]);
     //var rolesColors = roleTypeColors;
     
