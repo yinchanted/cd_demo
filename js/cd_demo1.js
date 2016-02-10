@@ -139,7 +139,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         function (p, v) { // add function
               p[v.Division] += v.count;
               return p;
-          },
+        },
         function (p, v) { // subtract function
             p[v.Division] -= v.count;
             return p;
@@ -154,7 +154,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .dimension(demoDateDim)
         .group(demoDateGroupSum, "IT").valueAccessor(function (d) { return d.value.IT; })
         .stack(demoDateGroupSum, "OPS", function (d) { return d.value.OPS; })
-        .width(650)
+        .width(750)
         .height(200).margins({ top: 10, right: 30, bottom: 20, left: 50 })
         .legend(dc.legend().x(60).y(20))
         //.gap(1)  // space between bars
@@ -162,7 +162,9 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         //.x(d3.time.scale().domain([dateFormat.parse("2015-11-19T5:00Z"), dateFormat.parse("2016-01-15T5:00Z")]))
         //.x(d3.time.scale().domain(d3.extent(data, function(d) { return d3.time.day.round(d.Time) })))
         //.x(d3.scale.ordinal().domain([dateFormat.parse("2015-11-20T5:00Z"), dateFormat.parse("2015-12-16T12:00Z"), dateFormat.parse("2016-01-14T14:00Z")]).range([0, 3]))
-        .x(d3.scale.ordinal().domain(d3.time.days(new Date(2015, 10, 20), new Date(2016, 0, 14))).rangeRoundBands([0, 650], .1))
+        //.x(d3.scale.ordinal().domain(d3.time.days(new Date(2015, 10, 20), new Date(2016, 0, 14))).rangeRoundBands([0, 650], .1))
+        .round(d3.time.day.round)
+        .x(d3.time.scale().domain([new Date(2015, 10, 18), new Date(2016, 0, 18)]).rangeRound([0, 750]))
         //.xUnits(d3.time.days)
         //.xUnits(dc.units.ordinal)
         //.elasticY(true)
@@ -170,7 +172,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .ordinalColors(appropriationTypeColors)
         //.xAxis().ticks(d3.time.days, 4).tickFormat(d3.time.format("%b%e"));
         .xAxis()
-            .ticks(3)
+            //.ticks(3)
             .tickFormat(d3.time.format("%b%e"));
 
     demoDateBarChart.yAxis().tickFormat(function (v) { return v + " ppl"; });
