@@ -9,16 +9,8 @@ var nameRowChart;
 var demoDateBarChart;
 
 var appropriationTypeColors =
-    ["#9e9ac8",
-     "#bcbddc", // light green 
-    "#007BA7"]; // blue
-
-var rolesColors =
-    [
-     "#aec7e8", // light blue 
-    "#1f77b4", // dark blue
-    "#ffbb78" //  orange 
-    ]; 
+    ["#FE5F55",
+     "#F0B67F"];
 
 // load the data file
 d3.csv("data/cd_demo_all.csv", function (data) {
@@ -60,7 +52,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         d.Time = dateFormat.parse(d.Time);
         
         // set date as a the initial index (2016.1). TODO: remove the need of this field
-        d.Date = "" + d.Time.getFullYear() + "." + d.Time.getMonth();
+        //d.Date = "" + d.Time.getFullYear() + "." + d.Time.getMonth();
     });
     // put data in crossfilter
     var facts = crossfilter(data);
@@ -133,12 +125,13 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         .ordinalColors(appropriationTypeColors);
 
     // 04 dimension and group for demo date
-    var demoDateDim = facts.dimension(dc.pluck('Date'));
+//    var demoDateDim = facts.dimension(dc.pluck('Date'));
+    var demoDateDim = facts.dimension(function(d) { return d3.time.day(d.Time);});
     var demoDateGroupSum = demoDateDim.group().reduce(
         function (p, v) { // add function
               p[v.Division] += v.count;
               return p;
-          },
+        },
         function (p, v) { // subtract function
             p[v.Division] -= v.count;
             return p;
@@ -148,29 +141,34 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         }
     );
 
-    // 05 stacked bar chart for fiscal year w/appropriation types  
+    // 05 stacked bar chart for days w/appropriation types  
     demoDateBarChart
         .dimension(demoDateDim)
         .group(demoDateGroupSum, "IT").valueAccessor(function (d) { return d.value.IT; })
         .stack(demoDateGroupSum, "OPS", function (d) { return d.value.OPS; })
-        .width(650)
-        .centerBar(true)
+        .width(750)
         .height(200).margins({ top: 10, right: 30, bottom: 20, left: 50 })
         .legend(dc.legend().x(60).y(20))
-        .gap(200)  // space between bars
-        .centerBar(true)
-        .x(d3.scale.linear().domain([2014.2, 2017], .1))
-        //.x(d3.time.scale().domain([(new Date(2015,11,12)), (new Date(2016,01,20))]).nice(d3.time.day))
-         //function (x) {
-         // return x.getDate() + "/" + (x.getMonth()+1);
-        // }
-        .elasticY(true)
+        //.gap(1)  // space between bars
+        //.centerBar(true)
+        //.x(d3.time.scale().domain([dateFormat.parse("2015-11-19T5:00Z"), dateFormat.parse("2016-01-15T5:00Z")]))
+        //.x(d3.time.scale().domain(d3.extent(data, function(d) { return d3.time.day.round(d.Time) })))
+        //.x(d3.scale.ordinal().domain([dateFormat.parse("2015-11-20T5:00Z"), dateFormat.parse("2015-12-16T12:00Z"), dateFormat.parse("2016-01-14T14:00Z")]).range([0, 3]))
+        //.x(d3.scale.ordinal().domain(d3.time.days(new Date(2015, 10, 20), new Date(2016, 0, 14))).rangeRoundBands([0, 650], .1))
+        .round(d3.time.day.round)
+        .x(d3.time.scale().domain([new Date(2015, 10, 18), new Date(2016, 2, 18)]).rangeRound([0, 750]))
+        //.xUnits(d3.time.days)
+        //.xUnits(dc.units.ordinal)
+        //.elasticY(true)
+        //.barPadding(2)
         .ordinalColors(appropriationTypeColors)
-        .xAxis().tickFormat(d3.time.format("%Y-%m-%dT%H:%M"));
+        //.xAxis().ticks(d3.time.days, 4).tickFormat(d3.time.format("%b%e"));
+        .xAxis()
+            //.ticks(3)
+            .tickFormat(d3.time.format("%b%e"));
 
-    // 06 Set format. These don't return the chart, so can't chain them 
-    demoDateBarChart.xAxis().tickFormat(d3.format("d")); // need "2005" not "2,005" 
     demoDateBarChart.yAxis().tickFormat(function (v) { return v + " ppl"; });
+    demoDateBarChart.xUnits(function(){return 100;});
        
     
     // 04 dimension, rowchart, department_TYPE  
@@ -186,7 +184,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        .ordinalColors(['#c5b0d5']) // light blue
+        .ordinalColors(['#C6DABF']) // light green
         //.colors(d3.scale.category20())
         .labelOffsetX(0)
         .xAxis().ticks(5).tickFormat(d3.format("d"));
@@ -204,8 +202,8 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        //.ordinalColors(['#c5b0d5']) // light purple
-        .colors(d3.scale.category20())
+        .ordinalColors(['#C6DABF']) // light green
+        //.colors(d3.scale.category20())
         .labelOffsetX(0)
         .xAxis().ticks(4).tickFormat(d3.format("d"));
     
@@ -225,7 +223,9 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         return old;
     }, {}));
     //var rolesColors = d3.scale.category20();
-    var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#aec7e8", "#e7cb94"]);
+    //var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#aec7e8", "#e7cb94"]);
+    var rolesColors = d3.scale.ordinal().range(["#E0E4CC", "#A7DBDB", "#1B98E0"]);
+    //var rolesColors = d3.scale.ordinal().range(["#C5C3C6", "#A7DBDB", "#1B98E0"]); 
     //var rolesColors = roleTypeColors;
     
     rolePieChart
