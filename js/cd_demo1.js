@@ -9,16 +9,8 @@ var nameRowChart;
 var demoDateBarChart;
 
 var appropriationTypeColors =
-    ["#9e9ac8",
-     "#bcbddc", // light green 
-    "#007BA7"]; // blue
-
-var rolesColors =
-    [
-     "#aec7e8", // light blue 
-    "#1f77b4", // dark blue
-    "#ffbb78" //  orange 
-    ]; 
+    ["#FE5F55",
+     "#F0B67F"];
 
 // load the data file
 d3.csv("data/cd_demo_all.csv", function (data) {
@@ -164,7 +156,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         //.x(d3.scale.ordinal().domain([dateFormat.parse("2015-11-20T5:00Z"), dateFormat.parse("2015-12-16T12:00Z"), dateFormat.parse("2016-01-14T14:00Z")]).range([0, 3]))
         //.x(d3.scale.ordinal().domain(d3.time.days(new Date(2015, 10, 20), new Date(2016, 0, 14))).rangeRoundBands([0, 650], .1))
         .round(d3.time.day.round)
-        .x(d3.time.scale().domain([new Date(2015, 10, 18), new Date(2016, 0, 18)]).rangeRound([0, 750]))
+        .x(d3.time.scale().domain([new Date(2015, 10, 18), new Date(2016, 2, 18)]).rangeRound([0, 750]))
         //.xUnits(d3.time.days)
         //.xUnits(dc.units.ordinal)
         //.elasticY(true)
@@ -192,7 +184,7 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        .ordinalColors(['#c5b0d5']) // light blue
+        .ordinalColors(['#C6DABF']) // light green
         //.colors(d3.scale.category20())
         .labelOffsetX(0)
         .xAxis().ticks(5).tickFormat(d3.format("d"));
@@ -210,8 +202,8 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         //.height(15 * 22)
         .margins({ top: 0, right: 10, bottom: 20, left: 20 })
         .elasticX(true)
-        //.ordinalColors(['#c5b0d5']) // light purple
-        .colors(d3.scale.category20())
+        .ordinalColors(['#C6DABF']) // light green
+        //.colors(d3.scale.category20())
         .labelOffsetX(0)
         .xAxis().ticks(4).tickFormat(d3.format("d"));
     
@@ -231,7 +223,9 @@ d3.csv("data/cd_demo_all.csv", function (data) {
         return old;
     }, {}));
     //var rolesColors = d3.scale.category20();
-    var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#aec7e8", "#e7cb94"]);
+    //var rolesColors = d3.scale.ordinal().range(["#ffbb78", "#aec7e8", "#e7cb94"]);
+    var rolesColors = d3.scale.ordinal().range(["#E0E4CC", "#A7DBDB", "#1B98E0"]);
+    //var rolesColors = d3.scale.ordinal().range(["#C5C3C6", "#A7DBDB", "#1B98E0"]); 
     //var rolesColors = roleTypeColors;
     
     rolePieChart
